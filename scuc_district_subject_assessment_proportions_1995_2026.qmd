@@ -1,0 +1,209 @@
+---
+title: "SCUC District Subject Assessment Proportions, 1995–2026"
+subtitle: "Policycraft longitudinal-data note"
+author: "Dan Swart, CPA (ret)"
+date: "September 11, 2026"
+date-format: long
+format:
+  html:
+    embed-resources: true
+    toc: true
+    toc-location: right
+    code-copy: true
+    code-fold: true
+    code-summary: "Show the code"
+    code-overflow: wrap
+    df-print: paged
+    fig-width: 13
+    fig-height: 8
+    fig-dpi: 300
+editor: source
+execute-dir: project
+execute:
+  echo: false
+  message: false
+  warning: false
+  error: false
+  cache: false
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+base::options(scipen = 999)
+base::set.seed(123)
+
+locate_output <- function(filename) {
+  candidates <- c(
+    file.path("outputs", filename),
+    file.path("..", "outputs", filename)
+  )
+  found <- candidates[file.exists(candidates)]
+  if (length(found) != 1L) {
+    stop("Could not uniquely locate required output: ", filename)
+  }
+  normalizePath(found, mustWork = TRUE)
+}
+
+data_path <- locate_output(
+  "scuc_district_subject_assessment_proportions_1995_2026_policycraft.csv"
+)
+validation_path <- locate_output(
+  "scuc_district_subject_assessment_proportions_1995_2026_validation.csv"
+)
+coverage_path <- locate_output(
+  "scuc_district_subject_assessment_proportions_1995_2026_subject_coverage.csv"
+)
+
+assessment_data <- utils::read.csv(data_path, check.names = FALSE)
+validation <- utils::read.csv(validation_path, check.names = FALSE)
+coverage <- utils::read.csv(coverage_path, check.names = FALSE)
+```
+
+# Purpose
+
+This analytical dataset contains one row for each academic-year ending year and
+subject for Schertz-Cibolo-Universal City ISD. It is formatted for
+`Policycraft::launch_longitudinal()` and spans 1995 through 2026. The outcome is
+the district-wide proportion of tested students meeting the applicable passing
+standard or higher.
+
+Use these fields in Policycraft:
+
+- `date`: date field (integer academic-year ending year);
+- `value`: value field (proportion from 0 to 1); and
+- `series_label`: grouping field (subject).
+
+Enable percentage display. `subject_sort` provides the intended display order:
+Reading, Writing, Mathematics, Science, and Social Studies. The outcome's
+success direction is higher is better.
+
+# Coverage
+
+```{r}
+#| label: coverage-summary
+
+coverage_display <- coverage[c(
+  "subject", "years_with_results", "include_more_than_five_years"
+)]
+names(coverage_display) <- c(
+  "Subject", "Years with results", "Retained"
+)
+knitr::kable(coverage_display, row.names = FALSE)
+```
+
+All five subjects have more than five years with results and are retained. The
+CSV uses a complete 1995–2026 year-subject grid so missing administrations are
+visible rather than silently dropped.
+
+The modern canonical source contains both 2024–2025 and 2025–2026. Thus, rows
+with `date` equal to 2025 and 2026 have been appended for Reading, Mathematics,
+Science, and Social Studies. Writing is retained as a historical series but is
+not separately reported after its integration into the redesigned Reading
+Language Arts assessment.
+
+# Assessment-program labels
+
+Each row identifies the testing program associated with its academic-year
+ending year:
+
+| Ending years | `exam_type` | Assessment |
+|---|---|---|
+| 1995–2002 | TAAS | Texas Assessment of Academic Skills |
+| 2003–2011 | TAKS | Texas Assessment of Knowledge and Skills |
+| 2012–2026 | STAAR | State of Texas Assessments of Academic Readiness |
+
+The `exam_type` field should be used to identify regime changes, not as evidence
+that scores are directly comparable across those changes.
+
+# Calculation
+
+For STAAR years, the dataset uses the requested ratio-of-sums method:
+
+$$
+\text{District subject proportion}
+=
+\frac{\sum_g \text{tests passed}_g}
+     {\sum_g \text{tests taken}_g}.
+$$
+
+The numerator is the `Satisfactory` count for 2012–2016 and the `Approaches and
+Above` count from 2017 onward. Those labels are the applicable passing-level
+fields in the canonical source. The numerator and denominator are aggregated
+separately across the grades in which each subject was administered before the
+ratio is calculated. This avoids averaging grade-level percentages and gives
+each tested student the correct weight.
+
+The contributing grades generally are:
+
+- Reading and Mathematics: Grades 3–8;
+- Science: Grades 5 and 8;
+- Social Studies: Grade 8; and
+- Writing: Grades 4 and 7 while separately administered.
+
+For 1995–2011, the available source contains published district-wide subject
+percentages but not tests-passed and tests-taken counts. Those values are
+therefore retained as reported proportions and identified by
+`calculation_method = "reported_district_subject_proportion"`. They were not
+recalculated or presented as count-weighted values.
+
+# Important limitations
+
+1. **Assessment regimes are not interchangeable.** TAAS, TAKS, and STAAR used
+   different standards, designs, content expectations, and reporting rules.
+   A regime boundary can create a discontinuity unrelated to district process
+   performance. Analyze within regimes or annotate boundaries prominently.
+
+2. **The population definition changes at 2012.** The STAAR calculation is
+   explicitly Grades 3–8. The earlier source describes district-reported tested
+   grades and does not include the counts required to reconstruct an identical
+   Grades 3–8 population.
+
+3. **The performance label changes within STAAR.** `Satisfactory` is used for
+   2012–2016 and `Approaches and Above` thereafter. The source-specific label is
+   retained in `performance_standard`.
+
+4. **There is no 2020 result.** Spring 2020 statewide assessments were canceled.
+   The dataset retains an explicit missing row for every subject with
+   `reporting_status = "not_administered_statewide"`; missing values are not
+   zeroes and are not imputed.
+
+5. **Subjects have different tested-grade coverage.** Subject proportions
+   combine only the grades in which that subject was administered. Do not
+   interpret differences between subjects as if they represent identical sets
+   of students or grades.
+
+6. **Writing becomes unavailable as a separate series.** Beginning with the
+   2021–2022 academic year, this dataset marks Writing as
+   `not_separately_reported`. It should not be filled from the Reading series.
+
+7. **Full precision is retained.** `value` is the analytical proportion;
+   `percent` is provided for convenience. Round only for display.
+
+# Validation
+
+```{r}
+#| label: validation-results
+
+validation_display <- validation
+names(validation_display) <- c("Check", "Passed")
+knitr::kable(validation_display, row.names = FALSE)
+```
+
+The build asserts a unique `date × subject` key, valid proportion bounds,
+reconciliation of every count-derived STAAR value to `tests_passed /
+tests_taken`, the 1995–2026 date range, the subject-duration rule, presence of
+2025 and 2026 results, and the explicit 2020 gap.
+
+# Provenance and reproducibility
+
+The build script is `R/build_district_subject_assessment_proportions.R`. It
+reads these canonical inputs without modifying them:
+
+- `data/SCUC_Snapshots_1995_to_2023_LONG_CANONICAL.csv`; and
+- `../SCUC STAAR Longitudinal Data/data/canonical/SCUC_STAAR_Grades_3_8_Annual_2012_2026_LONG_CANONICAL.csv`.
+
+The accompanying lineage CSV records absolute source paths, MD5 checksums,
+file modification times, dimensions, and each source's role. The output is a
+derived analytical dataset, not a replacement for either canonical source.

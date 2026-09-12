@@ -1,0 +1,8 @@
+"check","passed"
+"unique_year_subject_key",TRUE
+"date_range_is_1995_to_2026",TRUE
+"all_values_are_proportions",TRUE
+"modern_count_ratios_reconcile",TRUE
+"subjects_have_more_than_five_results",TRUE
+"2025_and_2026_present",TRUE
+"2020_is_explicitly_missing",TRUE
