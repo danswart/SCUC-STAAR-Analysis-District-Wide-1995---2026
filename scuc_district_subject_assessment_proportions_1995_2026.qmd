@@ -1,30 +1,120 @@
 ---
 title: "SCUC District Subject Assessment Proportions, 1995–2026"
 subtitle: "Policycraft longitudinal-data note"
-author: "Dan Swart, CPA (ret)"
-date: "September 11, 2026"
+authors: 
+  - name: "Dan Swart, CPA (ret)"
+date: today
 date-format: long
+# bibliography: manual-refs.bib
 format:
   html:
-    embed-resources: true
-    toc: true
-    toc-location: right
+    resources:
+      - reference-backlinks.js
+    include-after-body:    
+      - text: |
+          # <script type="text/javascript" src="reference-backlinks.js"></script>
+    default: true         
     code-copy: true
-    code-fold: true
+    code-link: true        # This adds individual buttons
+    code-fold: true        # Hide code by default, show on click
     code-summary: "Show the code"
     code-overflow: wrap
-    df-print: paged
+    code-block-bg: "#FAEBD7"
+    code-block-border-left: "#31BAE9"
+    embed-resources: true     # Set to 'false' for drafts. Override if you're NOT sharing output
+    include-in-header:
+      - text: 
+          <link href="https://fonts.googleapis.com/css2?family=Lato&display=swap" rel="stylesheet">
+          <link href="https://fonts.googleapis.com/css2?family=Fira+Mono&display=swap" rel="stylesheet">
+          <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+          <link href="https://fonts.googleapis.com/css2?family=Cabin&display=swap" rel="stylesheet">
+          <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab&display=swap" rel="stylesheet">
+          <link href="https://fonts.googleapis.com/css2?family=Schoolbell&display=swap" rel="stylesheet">
+      - header.html
+    css:
+      - swart.css
+      - tachyons.min.css
+      - r-colors.css
+    fontsize: 18pt
+    lightbox: true
+    page-layout: full
     fig-width: 13
     fig-height: 8
     fig-dpi: 300
+    html-math-method: katex
+    df-print: paged
+    toc: true
+    toc-float: true
+    citeproc: true
+    link-citations: true
+    linestretch: 1.0
+    
+    
+    
+  typst:
+    fig-width: 13
+    fig-height: 8
+    fig-dpi: 300
+    margin:
+      x: 1in
+      y: 1in
+    toc: true
+    fontsize: 16pt
+    mainfont: "Cabin"
+  
+
+    
+  revealjs:
+    slide-number: true
+    transition: fade
+    code-overflow: wrap
+    center: true
+    smaller: true
+    scrollable: true
+    chalkboard: true
+    multiplex: false
+    theme: solarized
+    reference-location: margin
+    logo: img/red-cross-640-435.png
+    footer: "Footer text"
+    code-block-height: 650px
+
+
+
+  # docx:
+  #   highlight-style: github
+  #   fig_caption: true
+
+
+
 editor: source
-execute-dir: project
+
+quarto:
+  render:
+    cache-refresh: true
+
+
+# for .qmd filesd
 execute:
-  echo: false
+  echo: true
   message: false
   warning: false
-  error: false
-  cache: false
+  eval: true
+  fig-width: 13
+  fig-height: 8
+
+
+# for .rmd files
+knitr:
+  opts_chunk:
+    echo: true
+    error: false
+    warning: false
+    message: false
+    cache: false
+
+params:
+  data_updated: !expr format(Sys.Date(), "%B %Y")
 ---
 
 ```{r}
