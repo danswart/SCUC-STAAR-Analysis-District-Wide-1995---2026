@@ -391,10 +391,10 @@ chart <- chart + scale_x_date(date_breaks = date_breaks, date_labels = date_labe
 chart <- chart + scale_y_continuous(labels = scales::label_percent(accuracy = 1))
 
 chart <- chart + ggplot2::labs(
-    title = "Title",
-    subtitle = "Subtitle",
-    caption = "Caption",
-    x = "Academic Year Ended",
+    title = "None of The Initiatives Over All Those Years Worked. We Are Doing Worse Now Than 1998",
+    subtitle = "(Baldridge, MAP, DEI, Mission-Vision-Values, Closing the Gaps, TASB Good Governance, etc. etc. etc)",
+    caption = "Data Source:  TEA Website",
+    x = "Year After Year - Initiative After Initiative",
     y = "Pct Meeting Standard"
   )
 chart <- chart + policycraft::policycraft_chart_theme()
@@ -409,7 +409,7 @@ if (interactive()) print(chart)
 # Save in a widescreen landscape layout. Keeping these dimensions here makes
 # the intended orientation reproducible when this script is run directly.
 ggsave(
-  filename = "ggplot2 code/math_expectation_chart_2026-09-11-landscape.png",
+  filename = "img/math_did_it_work_chart_2026-09-11-landscape.png",
   plot = chart,
   width = 16,
   height = 9,
